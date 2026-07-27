@@ -1,0 +1,17 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+.idea
+
+# Virtual environments
+.venv
+
+# Secrets
+.env
+credentails.json
+prachkabot-5be2acbdfb13.json
