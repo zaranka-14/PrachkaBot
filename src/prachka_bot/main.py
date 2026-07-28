@@ -1,9 +1,4 @@
-import asyncio
-import logging
-from aiogram import Bot, Dispatcher
 
-from prachka_bot import config
-from prachka_bot.handlers import common, client, admin
 
 import sys
 import os
@@ -15,6 +10,13 @@ while current_dir != os.path.dirname(current_dir):
             sys.path.insert(0, current_dir)
         break
     current_dir = os.path.dirname(current_dir)
+
+import asyncio
+import logging
+from aiogram import Bot, Dispatcher
+
+from prachka_bot import config
+from prachka_bot.handlers import common, client, admin
 
 logging.basicConfig(level=logging.INFO)
 
