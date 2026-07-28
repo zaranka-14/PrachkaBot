@@ -1,0 +1,33 @@
+from aiogram import Router, types
+from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from prachka_bot.services.google_sheets import is_admin
+
+router = Router()
+
+@router.message(Command("start"))
+async def cmd_start(message: types.Message):
+    text = (
+        "Здравствуйте! Это бот прачечной.\n\n"
+        "Отправьте мне **номер заказа** (из чека) или **номер телефона** "
+        "в формате 8XXXXXXXXXX — и я скажу статус вашего белья."
+    )
+
+    if is_admin(message.from_user.id):
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="👑 Админ-панель", callback_data="admin_menu")]
+        ])
+        await message.answer(text, parse_mode="Markdown", reply_markup=keyboard)
+    else:
+        await message.answer(text, parse_mode="Markdown")
+
+
+@router.message(Command("cancel"))
+async def cmd_cancel(message: types.Message, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state is None:
+        await message.answer("Доброго времени суток! Отправьте /start для справки.")
+        return
+    await state.clear()
+    await message.answer("Мы вернулись в начало. Чем я могу помочь?")

@@ -15,5 +15,6 @@ if not creds_json:
 
 CREDENTIALS_DICT = json.loads(creds_json)
 
-SPREADSHEET_NAME = os.getenv("SPREADSHEET_NAME", "Prachka Orders")
+SPREADSHEET_NAME = os.getenv("SPREADSHEET_NAME", "Prachka orders")
 SHEET_NAME = os.getenv("SHEET_NAME", "Orders")
+
