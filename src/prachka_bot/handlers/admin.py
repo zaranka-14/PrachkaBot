@@ -65,7 +65,11 @@ async def add_phone(message: types.Message, state: FSMContext):
             InlineKeyboardButton(text="Сегодня", callback_data="time_today"),
             InlineKeyboardButton(text="Завтра", callback_data="time_tomorrow"),
             InlineKeyboardButton(text="Послезавтра", callback_data="time_afterTomorrow"),
+        ],
+        [
             InlineKeyboardButton(text="Через 2 дня", callback_data="time_2days"),
+        ],
+        [
             InlineKeyboardButton(text="Через 3 дня", callback_data="time_3days"),
         ],
         [
@@ -103,8 +107,14 @@ async def process_time_selection(callback: types.CallbackQuery, state: FSMContex
         records = get_unfinished_orders(sheet)
         new_id = max([int(r["ID"]) for r in records], default=0) + 1
         sheet.append_row([new_id, data["phone"], "Принят", datetime.now().strftime("%d.%m.%Y"), ready_time, data["weight"]])
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="➕ Добавить заказ", callback_data="admin_add")],
+            [InlineKeyboardButton(text="✏️ Изменить статус", callback_data="admin_change")]
+        ])
         await callback.message.answer(
-            f"✅ Заказ №{new_id} добавлен.\nЗаказчик: {data['phone']}\nСтатус: Принят\nГотовность: {ready_time}\nВес: {data['weight']}")
+            f"✅ Заказ №{new_id} добавлен.\nЗаказчик: {data['phone']}\nСтатус: Принят\nГотовность: {ready_time}\nВес: {data['weight']}",
+            reply_markup=keyboard)
+
     except Exception as e:
         await callback.message.answer(f"Ошибка: {e}")
 
@@ -122,7 +132,12 @@ async def add_custom_time(message: types.Message, state: FSMContext):
         records = get_unfinished_orders(sheet)
         new_id = max([int(r["ID"]) for r in records], default=0) + 1
         sheet.append_row([new_id, data["phone"], "Принят", datetime.now().strftime("%d.%m.%Y"), ready_time, data["weight"]])
-        await message.answer(f"✅ Заказ №{new_id} добавлен.\nЗаказчик: {data['phone']}\nСтатус: Принят\nГотовность: {ready_time}\nВес: {data['weight']}")
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="➕ Добавить заказ", callback_data="admin_add")],
+            [InlineKeyboardButton(text="✏️ Изменить статус", callback_data="admin_change")]
+        ])
+        await message.answer(f"✅ Заказ №{new_id} добавлен.\nЗаказчик: {data['phone']}\nСтатус: Принят\nГотовность: {ready_time}\nВес: {data['weight']}",
+                             reply_markup=keyboard)
     except Exception as e:
         await message.answer(f"Ошибка: {e}")
 
@@ -226,8 +241,13 @@ async def process_status_change(callback: types.CallbackQuery):
                 break
 
         if updated:
+            keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="➕ Добавить заказ", callback_data="admin_add")],
+                [InlineKeyboardButton(text="✏️ Изменить статус", callback_data="admin_change")]
+            ])
             await callback.message.answer(
-                f"✅ Статус заказа №{order_id} изменён на «{new_status}»."
+                f"✅ Статус заказа №{order_id} изменён на «{new_status}».",
+                keyboard=keyboard
             )
         else:
             await callback.message.answer(f"❌ Заказ №{order_id} не найден.")
