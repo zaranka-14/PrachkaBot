@@ -28,7 +28,7 @@ def find_order(sheet, query: str):
     records = sheet.get_all_records()
     for i, row in enumerate(records, start=2):
         if str(row.get("ID", "")).strip() == query or \
-           str(row.get("Телефон", "")).strip() == query:
+           str(row.get("Заказчик", "")).strip() == query:
             return i, row
     return None
 
@@ -49,8 +49,7 @@ def find_active_orders(sheet, query: str):
     active_orders = []
 
     for row in records:
-        if str(row.get("ID", "")).strip() == query or \
-                str(row.get("Телефон", "")).strip() == query:
+        if str(row.get("Заказчик", "")).strip() == query:
             if str(row.get("Статус", "")).strip() != "Завершено":
                 active_orders.append(row)
 

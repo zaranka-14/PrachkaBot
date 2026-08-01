@@ -39,7 +39,7 @@ async def admin_menu_callback(callback: types.CallbackQuery):
 
 @router.callback_query(F.data == "admin_add")
 async def admin_add(callback: types.CallbackQuery, state: FSMContext):
-    await callback.message.answer("Введите телефон клиента (10 цифр):")
+    await callback.message.answer("Введите телефон или фамилию клиента:")
     await state.set_state(AddOrder.waiting_phone)
     await callback.answer()
 
@@ -47,9 +47,6 @@ async def admin_add(callback: types.CallbackQuery, state: FSMContext):
 @router.message(AddOrder.waiting_phone)
 async def add_phone(message: types.Message, state: FSMContext):
     phone = message.text.strip()
-    if not phone.isdigit() or len(phone) < 10:
-        await message.answer("Неверный формат. Введите 10 цифр телефона:")
-        return
     await state.update_data(phone=phone)
     await message.answer("Сколько примерно весит белье (кг)?")
     await state.set_state(AddOrder.waiting_weight)
@@ -68,6 +65,8 @@ async def add_phone(message: types.Message, state: FSMContext):
             InlineKeyboardButton(text="Сегодня", callback_data="time_today"),
             InlineKeyboardButton(text="Завтра", callback_data="time_tomorrow"),
             InlineKeyboardButton(text="Послезавтра", callback_data="time_afterTomorrow"),
+            InlineKeyboardButton(text="Через 2 дня", callback_data="time_2days"),
+            InlineKeyboardButton(text="Через 3 дня", callback_data="time_3days"),
         ],
         [
             InlineKeyboardButton(text="Другое время (введите вручную)", callback_data="time_custom"),
@@ -87,6 +86,8 @@ async def process_time_selection(callback: types.CallbackQuery, state: FSMContex
         "today": datetime.now().strftime("%d.%m.%Y"),
         "tomorrow": (datetime.now() + timedelta(days=1)).strftime("%d.%m.%Y"),
         "afterTomorrow": (datetime.now() + timedelta(days=2)).strftime("%d.%m.%Y"),
+        "2days": (datetime.now() + timedelta(days=3)).strftime("%d.%m.%Y"),
+        "3days": (datetime.now() + timedelta(days=4)).strftime("%d.%m.%Y"),
         "custom": None
     }
 
@@ -103,7 +104,7 @@ async def process_time_selection(callback: types.CallbackQuery, state: FSMContex
         new_id = max([int(r["ID"]) for r in records], default=0) + 1
         sheet.append_row([new_id, data["phone"], "Принят", datetime.now().strftime("%d.%m.%Y"), ready_time, data["weight"]])
         await callback.message.answer(
-            f"✅ Заказ №{new_id} добавлен.\nТелефон: {data['phone']}\nСтатус: Принят\nГотовность: {ready_time}\nВес: {data['weight']}")
+            f"✅ Заказ №{new_id} добавлен.\nЗаказчик: {data['phone']}\nСтатус: Принят\nГотовность: {ready_time}\nВес: {data['weight']}")
     except Exception as e:
         await callback.message.answer(f"Ошибка: {e}")
 
@@ -121,7 +122,7 @@ async def add_custom_time(message: types.Message, state: FSMContext):
         records = get_unfinished_orders(sheet)
         new_id = max([int(r["ID"]) for r in records], default=0) + 1
         sheet.append_row([new_id, data["phone"], "Принят", datetime.now().strftime("%d.%m.%Y"), ready_time, data["weight"]])
-        await message.answer(f"✅ Заказ №{new_id} добавлен.\nТелефон: {data['phone']}\nСтатус: Принят\nГотовность: {ready_time}\nВес: {data['weight']}")
+        await message.answer(f"✅ Заказ №{new_id} добавлен.\nЗаказчик: {data['phone']}\nСтатус: Принят\nГотовность: {ready_time}\nВес: {data['weight']}")
     except Exception as e:
         await message.answer(f"Ошибка: {e}")
 
@@ -147,7 +148,7 @@ async def admin_change(callback: types.CallbackQuery):
     keyboard_buttons = []
     for r in records:
 
-        phone = str(r.get('Телефон', ''))
+        phone = str(r.get('Заказчик', ''))
         if len(phone) > 7:
             phone = phone[:4] + '...' + phone[-3:]
 

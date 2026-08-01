@@ -23,7 +23,7 @@ async def check_order(message: types.Message):
 
     if not active_orders:
         await message.answer(
-            "Заказ не найден или уже завершен. Проверьте номер. Даже если его тут нет, заказ выполняется."
+            "Заказ не найден или уже завершен. Проверьте фамилию или номер. Даже если заказа тут нет, он выполняется."
             "\nЕсли вы потерялись - нажмите /start")
         return
 
@@ -31,7 +31,7 @@ async def check_order(message: types.Message):
     for row in active_orders:
         text = (
             f"**Заказ №{row['ID']}**\n"
-            f"📞 Телефон: {row.get('Телефон', '—')}\n"
+            f"📞 Заказчик: {row.get('Заказчик', '—')}\n"
             f"⏳ Дата завершения: {row.get('Дата завершения', '—')}\n"
             f"📋 Статус: **{row.get('Статус', '—')}**\n"
             f"📦 Примерный вес: {row.get('Вес', '—')} кг"
