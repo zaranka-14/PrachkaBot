@@ -14,7 +14,7 @@ router = Router()
 async def admin_add(message: types.Message, state: FSMContext):
 
     if not is_admin(message.from_user.id):
-        await message.answer("У вас нет прав администратора.", show_alert=True)
+        await message.answer("У вас нет прав администратора.")
         return
 
     await message.answer("Введите телефон или фамилию клиента:")
@@ -121,10 +121,10 @@ async def add_custom_time(message: types.Message, state: FSMContext):
 # ---------------------------------- CHANGE --------------------------------------------------
 
 @router.message(F.text == "Изменить статус")
-async def admin_change(message: types.Message, state: FSMContext):
+async def admin_change(message: types.Message):
 
     if not is_admin(message.from_user.id):
-        await message.answer("У вас нет прав администратора.", show_alert=True)
+        await message.answer("У вас нет прав администратора.")
         return
 
     try:

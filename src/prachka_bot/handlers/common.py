@@ -1,7 +1,7 @@
-from aiogram import Router, types
+from aiogram import Router, types, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from prachka_bot.services.google_sheets import is_admin
 
 router = Router()
@@ -18,7 +18,8 @@ async def cmd_start(message: types.Message):
         keyboard = ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text="Добавить заказ")],
-                 [KeyboardButton(text="️Изменить статус")]
+                [KeyboardButton(text="️Изменить статус")],
+                [KeyboardButton(text="Отмена")]
             ],
             resize_keyboard=True,
             is_persistent=True
@@ -28,7 +29,7 @@ async def cmd_start(message: types.Message):
         await message.answer(text, parse_mode="Markdown")
 
 
-@router.message(Command("cancel"))
+@router.message(Command("cancel"), F.text == "Отмена")
 async def cmd_cancel(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
     if current_state is None:

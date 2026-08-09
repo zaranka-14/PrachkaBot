@@ -8,7 +8,7 @@ router = Router()
 async def check_order(message: types.Message):
     query = message.text.strip()
 
-    if query.startswith('/'):
+    if query.startswith('/') or query in ["Добавить заказ", "Изменить статус", "Отмена"]:
         return
 
     if not query.replace('-', '').replace(' ', '').isalnum():
