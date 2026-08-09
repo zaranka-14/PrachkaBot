@@ -16,7 +16,8 @@ async def cmd_start(message: types.Message):
 
     if is_admin(message.from_user.id):
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="👑 Админ-панель", callback_data="admin_menu")]
+            [InlineKeyboardButton(text="➕ Добавить заказ", callback_data="admin_add")],
+            [InlineKeyboardButton(text="✏️ Изменить статус", callback_data="admin_change")]
         ])
         await message.answer(text, parse_mode="Markdown", reply_markup=keyboard)
     else:
