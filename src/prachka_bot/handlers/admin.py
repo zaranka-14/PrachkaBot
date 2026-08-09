@@ -11,7 +11,7 @@ router = Router()
 
 # ---------------------------------- ADD -----------------------------------------------------
 
-@router.callback_query(F.text == "Добавить заказ")
+@router.message(F.text == "Добавить заказ")
 async def admin_add(message: types.Message, state: FSMContext):
 
     if not is_admin(message.from_user.id):
@@ -121,7 +121,7 @@ async def add_custom_time(message: types.Message, state: FSMContext):
 
 # ---------------------------------- CHANGE --------------------------------------------------
 
-@router.callback_query(F.text == "Изменить статус")
+@router.message(F.text == "Изменить статус")
 async def admin_change(message: types.Message):
 
     if not is_admin(message.from_user.id):
