@@ -1,5 +1,4 @@
 from aiogram import types, F, Router
-from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from datetime import datetime, timedelta
@@ -122,7 +121,7 @@ async def add_custom_time(message: types.Message, state: FSMContext):
 # ---------------------------------- CHANGE --------------------------------------------------
 
 @router.message(F.text == "Изменить статус")
-async def admin_change(message: types.Message):
+async def admin_change(message: types.Message, state: FSMContext):
 
     if not is_admin(message.from_user.id):
         await message.answer("У вас нет прав администратора.", show_alert=True)
