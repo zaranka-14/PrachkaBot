@@ -11,7 +11,7 @@ router = Router()
 
 # ---------------------------------- ADD -----------------------------------------------------
 
-@router.callback_query(F.text == "➕ Добавить заказ")
+@router.callback_query(F.text == "Добавить заказ")
 async def admin_add(callback: types.CallbackQuery, state: FSMContext):
 
     if not is_admin(callback.from_user.id):
@@ -122,8 +122,13 @@ async def add_custom_time(message: types.Message, state: FSMContext):
 
 # ---------------------------------- CHANGE --------------------------------------------------
 
-@router.callback_query(F.text == "✏️ Изменить статус")
+@router.callback_query(F.text == "Изменить статус")
 async def admin_change(callback: types.CallbackQuery):
+
+    if not is_admin(callback.from_user.id):
+        await callback.answer("У вас нет прав администратора.", show_alert=True)
+        return
+
     try:
         sheet = get_sheet()
         records = get_unfinished_orders(sheet)
