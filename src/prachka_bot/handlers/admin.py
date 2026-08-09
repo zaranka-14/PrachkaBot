@@ -12,15 +12,14 @@ router = Router()
 # ---------------------------------- ADD -----------------------------------------------------
 
 @router.callback_query(F.text == "Добавить заказ")
-async def admin_add(callback: types.CallbackQuery, state: FSMContext):
+async def admin_add(message: types.Message, state: FSMContext):
 
-    if not is_admin(callback.from_user.id):
-        await callback.answer("У вас нет прав администратора.", show_alert=True)
+    if not is_admin(message.from_user.id):
+        await message.answer("У вас нет прав администратора.", show_alert=True)
         return
 
-    await callback.message.answer("Введите телефон или фамилию клиента:")
+    await message.message.answer("Введите телефон или фамилию клиента:")
     await state.set_state(AddOrder.waiting_phone)
-    await callback.answer()
 
 
 @router.message(AddOrder.waiting_phone)
@@ -123,23 +122,21 @@ async def add_custom_time(message: types.Message, state: FSMContext):
 # ---------------------------------- CHANGE --------------------------------------------------
 
 @router.callback_query(F.text == "Изменить статус")
-async def admin_change(callback: types.CallbackQuery):
+async def admin_change(message: types.CallbackQuery):
 
-    if not is_admin(callback.from_user.id):
-        await callback.answer("У вас нет прав администратора.", show_alert=True)
+    if not is_admin(message.from_user.id):
+        await message.answer("У вас нет прав администратора.", show_alert=True)
         return
 
     try:
         sheet = get_sheet()
         records = get_unfinished_orders(sheet)
     except Exception as e:
-        await callback.message.answer(f"Ошибка: {e}")
-        await callback.answer()
+        await message.message.answer(f"Ошибка: {e}")
         return
 
     if not records:
-        await callback.message.answer("Заказов пока нет.")
-        await callback.answer()
+        await message.message.answer("Заказов пока нет.")
         return
 
     keyboard_buttons = []
@@ -159,11 +156,11 @@ async def admin_change(callback: types.CallbackQuery):
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
-    await callback.message.answer(
+    await message.message.answer(
         "Выберите заказ для изменения статуса:",
         reply_markup=keyboard
     )
-    await callback.answer()
+    await message.answer()
 
 
 @router.callback_query(F.data.startswith("change_"))
