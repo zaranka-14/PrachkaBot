@@ -17,8 +17,19 @@ async def admin_add(message: types.Message, state: FSMContext):
         await message.answer("У вас нет прав администратора.")
         return
 
-    await message.answer("Введите телефон или фамилию клиента:")
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="Отменить", callback_data="add_cancel")],
+        ]
+    )
+    await message.answer("Введите телефон или фамилию клиента.", reply_markup=keyboard)
     await state.set_state(AddOrder.waiting_phone)
+
+
+@router.callback_query(AddOrder.waiting_phone, F.data == "add_cancel")
+async def add_cancel(message: types.Message, state: FSMContext):
+    await message.answer("Отменяю добавление заказа.")
+    await state.clear()
 
 
 @router.message(AddOrder.waiting_phone)
@@ -33,8 +44,7 @@ async def add_phone(message: types.Message, state: FSMContext):
 async def add_phone(message: types.Message, state: FSMContext):
     weight = message.text.strip()
     if not weight.isdigit():
-        await message.answer("Неверный формат (требуется целое число). Отменяю добавление...")
-        await state.clear()
+        await message.answer("Неверный формат (требуется целое число).")
         return
     await state.update_data(weight=weight)
 
@@ -160,6 +170,7 @@ async def admin_change(message: types.Message):
         "Выберите заказ для изменения статуса:",
         reply_markup=keyboard
     )
+    return
 
 
 @router.callback_query(F.data.startswith("change_"))
