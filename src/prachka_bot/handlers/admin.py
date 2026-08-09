@@ -9,36 +9,15 @@ from prachka_bot.states import AddOrder
 
 router = Router()
 
+# ---------------------------------- ADD -----------------------------------------------------
 
-async def show_admin_menu(target, text="Панель администратора. Выберите действие:"):
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="➕ Добавить заказ", callback_data="admin_add")],
-        [InlineKeyboardButton(text="✏️ Изменить статус", callback_data="admin_change")]
-    ])
-    await target.answer(text, reply_markup=keyboard)
+@router.callback_query(F.text == "➕ Добавить заказ")
+async def admin_add(callback: types.CallbackQuery, state: FSMContext):
 
-
-@router.message(Command("Админ"))
-async def cmd_admin(message: types.Message):
-    if not is_admin(message.from_user.id):
-        await message.answer("У вас нет прав администратора.")
-        return
-    await show_admin_menu(message)
-
-
-@router.callback_query(F.data == "admin_menu")
-async def admin_menu_callback(callback: types.CallbackQuery):
     if not is_admin(callback.from_user.id):
         await callback.answer("У вас нет прав администратора.", show_alert=True)
         return
 
-    await show_admin_menu(callback.message)
-    await callback.answer()
-
-# ---------------------------------- ADD -----------------------------------------------------
-
-@router.callback_query(F.data == "admin_add")
-async def admin_add(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer("Введите телефон или фамилию клиента:")
     await state.set_state(AddOrder.waiting_phone)
     await callback.answer()
@@ -107,13 +86,12 @@ async def process_time_selection(callback: types.CallbackQuery, state: FSMContex
         records = get_unfinished_orders(sheet)
         new_id = max([int(r["ID"]) for r in records], default=0) + 1
         sheet.append_row([new_id, data["phone"], "Принят", datetime.now().strftime("%d.%m.%Y"), ready_time, data["weight"]])
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="➕ Добавить заказ", callback_data="admin_add")],
-            [InlineKeyboardButton(text="✏️ Изменить статус", callback_data="admin_change")]
-        ])
         await callback.message.answer(
-            f"✅ Заказ №{new_id} добавлен.\nЗаказчик: {data['phone']}\nСтатус: Принят\nГотовность: {ready_time}\nВес: {data['weight']}",
-            reply_markup=keyboard)
+            f"✅ Заказ №{new_id} добавлен."
+            f"\nЗаказчик: {data['phone']}"
+            f"\nСтатус: Принят"
+            f"\nГотовность: {ready_time}"
+            f"\nВес: {data['weight']}")
 
     except Exception as e:
         await callback.message.answer(f"Ошибка: {e}")
@@ -132,12 +110,11 @@ async def add_custom_time(message: types.Message, state: FSMContext):
         records = get_unfinished_orders(sheet)
         new_id = max([int(r["ID"]) for r in records], default=0) + 1
         sheet.append_row([new_id, data["phone"], "Принят", datetime.now().strftime("%d.%m.%Y"), ready_time, data["weight"]])
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="➕ Добавить заказ", callback_data="admin_add")],
-            [InlineKeyboardButton(text="✏️ Изменить статус", callback_data="admin_change")]
-        ])
-        await message.answer(f"✅ Заказ №{new_id} добавлен.\nЗаказчик: {data['phone']}\nСтатус: Принят\nГотовность: {ready_time}\nВес: {data['weight']}",
-                             reply_markup=keyboard)
+        await message.answer(f"✅ Заказ №{new_id} добавлен."
+                             f"\nЗаказчик: {data['phone']}"
+                             f"\nСтатус: Принят"
+                             f"\nГотовность: {ready_time}"
+                             f"\nВес: {data['weight']}")
     except Exception as e:
         await message.answer(f"Ошибка: {e}")
 
@@ -145,7 +122,7 @@ async def add_custom_time(message: types.Message, state: FSMContext):
 
 # ---------------------------------- CHANGE --------------------------------------------------
 
-@router.callback_query(F.data == "admin_change")
+@router.callback_query(F.text == "✏️ Изменить статус")
 async def admin_change(callback: types.CallbackQuery):
     try:
         sheet = get_sheet()
@@ -241,14 +218,8 @@ async def process_status_change(callback: types.CallbackQuery):
                 break
 
         if updated:
-            keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="➕ Добавить заказ", callback_data="admin_add")],
-                [InlineKeyboardButton(text="✏️ Изменить статус", callback_data="admin_change")]
-            ])
             await callback.message.answer(
-                f"✅ Статус заказа №{order_id} изменён на «{new_status}».",
-                keyboard=keyboard
-            )
+                f"✅ Статус заказа №{order_id} изменён на «{new_status}».")
         else:
             await callback.message.answer(f"❌ Заказ №{order_id} не найден.")
     except Exception as e:

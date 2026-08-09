@@ -1,7 +1,7 @@
 from aiogram import Router, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 from prachka_bot.services.google_sheets import is_admin
 
 router = Router()
@@ -10,15 +10,18 @@ router = Router()
 async def cmd_start(message: types.Message):
     text = (
         "Здравствуйте! Это бот прачечной.\n\n"
-        "Отправьте мне **вашу фамилию** или **номер телефона** "
+        "Отправьте мне **номер заказа** (из чека) или **номер телефона** "
         "в формате 8XXXXXXXXXX — и я скажу статус вашего белья."
     )
 
     if is_admin(message.from_user.id):
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="➕ Добавить заказ", callback_data="admin_add")],
-            [InlineKeyboardButton(text="✏️ Изменить статус", callback_data="admin_change")]
-        ])
+        keyboard = ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text="➕ Добавить заказ"), KeyboardButton(text="️✏️ Изменить статус")]
+            ],
+            resize_keyboard=True,
+            is_persistent=True
+        )
         await message.answer(text, parse_mode="Markdown", reply_markup=keyboard)
     else:
         await message.answer(text, parse_mode="Markdown")
