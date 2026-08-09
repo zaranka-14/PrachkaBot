@@ -18,7 +18,7 @@ async def cmd_start(message: types.Message):
         keyboard = ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text="Добавить заказ")],
-                [KeyboardButton(text="️Изменить статус")]
+                [KeyboardButton(text="Изменить статус")]
             ],
             resize_keyboard=True,
             is_persistent=True
