@@ -17,8 +17,8 @@ async def run_bot():
     bot = Bot(token=config.BOT_TOKEN)
     dp = Dispatcher()
 
-    dp.include_router(common.router)
     dp.include_router(admin.router)
+    dp.include_router(common.router)
     dp.include_router(client.router)
 
     await dp.start_polling(bot)

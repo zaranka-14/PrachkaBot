@@ -33,7 +33,8 @@ async def add_phone(message: types.Message, state: FSMContext):
 async def add_phone(message: types.Message, state: FSMContext):
     weight = message.text.strip()
     if not weight.isdigit():
-        await message.answer("Неверный формат. Введите число (вес белья)")
+        await message.answer("Неверный формат (требуется целое число). Отменяю добавление...")
+        await state.clear()
         return
     await state.update_data(weight=weight)
 

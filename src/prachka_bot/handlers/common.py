@@ -10,7 +10,7 @@ router = Router()
 async def cmd_start(message: types.Message):
     text = (
         "Здравствуйте! Это бот прачечной.\n\n"
-        "Отправьте мне **номер заказа** (из чека) или **номер телефона** "
+        "Отправьте мне **вашу фамилию** или **номер телефона** "
         "в формате 8XXXXXXXXXX — и я скажу статус вашего белья."
     )
 
@@ -18,8 +18,7 @@ async def cmd_start(message: types.Message):
         keyboard = ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text="Добавить заказ")],
-                [KeyboardButton(text="️Изменить статус")],
-                [KeyboardButton(text="Отмена")]
+                [KeyboardButton(text="️Изменить статус")]
             ],
             resize_keyboard=True,
             is_persistent=True
