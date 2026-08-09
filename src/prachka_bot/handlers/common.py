@@ -17,8 +17,8 @@ async def cmd_start(message: types.Message):
     if is_admin(message.from_user.id):
         keyboard = ReplyKeyboardMarkup(
             keyboard=[
-                [KeyboardButton(text="Добавить заказ"),
-                 KeyboardButton(text="️Изменить статус")]
+                [KeyboardButton(text="Добавить заказ")],
+                 [KeyboardButton(text="️Изменить статус")]
             ],
             resize_keyboard=True,
             is_persistent=True

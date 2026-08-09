@@ -18,7 +18,7 @@ async def admin_add(message: types.Message, state: FSMContext):
         await message.answer("У вас нет прав администратора.", show_alert=True)
         return
 
-    await message.message.answer("Введите телефон или фамилию клиента:")
+    await message.answer("Введите телефон или фамилию клиента:")
     await state.set_state(AddOrder.waiting_phone)
 
 
@@ -122,7 +122,7 @@ async def add_custom_time(message: types.Message, state: FSMContext):
 # ---------------------------------- CHANGE --------------------------------------------------
 
 @router.callback_query(F.text == "Изменить статус")
-async def admin_change(message: types.CallbackQuery):
+async def admin_change(message: types.Message):
 
     if not is_admin(message.from_user.id):
         await message.answer("У вас нет прав администратора.", show_alert=True)
@@ -132,11 +132,11 @@ async def admin_change(message: types.CallbackQuery):
         sheet = get_sheet()
         records = get_unfinished_orders(sheet)
     except Exception as e:
-        await message.message.answer(f"Ошибка: {e}")
+        await message.answer(f"Ошибка: {e}")
         return
 
     if not records:
-        await message.message.answer("Заказов пока нет.")
+        await message.answer("Заказов пока нет.")
         return
 
     keyboard_buttons = []
@@ -156,11 +156,10 @@ async def admin_change(message: types.CallbackQuery):
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
-    await message.message.answer(
+    await message.answer(
         "Выберите заказ для изменения статуса:",
         reply_markup=keyboard
     )
-    await message.answer()
 
 
 @router.callback_query(F.data.startswith("change_"))
